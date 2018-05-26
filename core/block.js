@@ -46,13 +46,11 @@ goog.require('goog.string');
 
 
 /**
- * Class for one block.
- * Not normally called directly, workspace.newBlock() is preferred.
- * @param {!Blockly.Workspace} workspace The block's workspace.
- * @param {?string} prototypeName Name of the language object containing
- *     type-specific functions for this block.
- * @param {string=} opt_id Optional ID.  Use this ID if provided, otherwise
- *     create a new ID.
+ * 为一个块初始化。
+ * 通常不直接调用，首选 workspace.newblock()
+ * @param {!Blockly.Workspace} workspace 块的工作区
+ * @param {?string} prototypeName 包含此块的特定类型函数的语言对象的名称。
+ * @param {string=} opt_id 可选标识。如果提供了此 ID，请使用此 ID，否则请创建新 ID。
  * @constructor
  */
 Blockly.Block = function(workspace, prototypeName, opt_id) {
@@ -64,88 +62,130 @@ Blockly.Block = function(workspace, prototypeName, opt_id) {
         + 'versions of Blockly.');
   }
 
-  /** @type {string} */
+  /**
+   * 积木全局唯一的 id
+   * @type {string}
+   **/
   this.id = (opt_id && !workspace.getBlockById(opt_id)) ?
       opt_id : Blockly.utils.genUid();
   workspace.blockDB_[this.id] = this;
-  /** @type {Blockly.Connection} */
+  /**
+   * @type {Blockly.Connection} UNKNOW: 这里应该是 Blockly.RenderedConnection
+   */
   this.outputConnection = null;
-  /** @type {Blockly.Connection} */
+  /**
+   * @type {Blockly.Connection} UNKNOW: 这里应该是 Blockly.RenderedConnection
+   */
   this.nextConnection = null;
-  /** @type {Blockly.Connection} */
+  /**
+   * @type {Blockly.Connection} UNKNOW: 这里应该是 Blockly.RenderedConnection
+   */
   this.previousConnection = null;
-  /** @type {!Array.<!Blockly.Input>} */
+  /**
+   * @type {!Array.<!Blockly.Input>} 非空数组，里面有非空 Blockly.Input
+   **/
   this.inputList = [];
-  /** @type {boolean|undefined} */
+  /**
+   * 是否为单行 input
+   * @type {boolean|undefined}
+   */
   this.inputsInline = undefined;
-  /** @type {boolean} */
+  /**
+   * UNKNOW: 积木是否禁用
+   * @type {boolean}
+   */
   this.disabled = false;
-  /** @type {string|!Function} */
+  /**
+   * @type {string|!Function} 字符串或非空函数
+   */
   this.tooltip = '';
-  /** @type {boolean} */
+  /**
+   * 是否显示右键菜单
+   * @type {boolean}
+   */
   this.contextMenu = true;
 
   /**
+   * 父块
    * @type {Blockly.Block}
    * @private
    */
   this.parentBlock_ = null;
 
   /**
+   * 与此块相连接的积木
    * @type {!Array.<!Blockly.Block>}
    * @private
    */
   this.childBlocks_ = [];
 
   /**
+   * 块是否可以被删除
    * @type {boolean}
    * @private
    */
   this.deletable_ = true;
 
   /**
+   * 块是否可以被拖动
    * @type {boolean}
    * @private
    */
   this.movable_ = true;
 
   /**
+   * UNKNOW: 块是否可以被编辑
    * @type {boolean}
    * @private
    */
   this.editable_ = true;
 
   /**
+   * 块是否是阴影积木（可以被拖入的积木代替，本身不可拖出父积木）
    * @type {boolean}
    * @private
    */
   this.isShadow_ = false;
 
   /**
+   * UNKNOW: 块当前是否为折叠状态
    * @type {boolean}
    * @private
    */
   this.collapsed_ = false;
 
-  /** @type {string|Blockly.Comment} */
+  /**
+   * @type {string|Blockly.Comment} 块绑定的注释
+   */
   this.comment = null;
 
   /**
-   * The block's position in workspace units.  (0, 0) is at the workspace's
-   * origin; scale does not change this value.
+   * 块在工作区单位中的位置。(0, 0) 位于工作区的原点；比例不会更改此值。
    * @type {!goog.math.Coordinate}
    * @private
    */
   this.xy_ = new goog.math.Coordinate(0, 0);
 
-  /** @type {!Blockly.Workspace} */
+  /**
+   * 块所属于的工作区
+   * @type {!Blockly.Workspace}
+   */
   this.workspace = workspace;
-  /** @type {boolean} */
+  /**
+   * 块是否在 flyout 中
+   * @type {boolean}
+   */
   this.isInFlyout = workspace.isFlyout;
-  /** @type {boolean} */
+  /**
+   * UNKNOW: 是否在变异体？
+   * @type {boolean}
+   */
   this.isInMutator = workspace.isMutator;
 
-  /** @type {boolean} */
+  /**
+   * Right To Left
+   * @type {boolean}
+   */
   this.RTL = workspace.RTL;
 
   // Copy the type-specific functions and data from the prototype.
@@ -164,8 +204,10 @@ Blockly.Block = function(workspace, prototypeName, opt_id) {
   if (goog.isFunction(this.init)) {
     this.init();
   }
-  // Record initial inline state.
-  /** @type {boolean|undefined} */
+  /**
+   * 记录初始内联状态
+   * @type {boolean|undefined}
+   */
   this.inputsInlineDefault = this.inputsInline;
 
   // Fire a create event.
@@ -190,12 +232,11 @@ Blockly.Block = function(workspace, prototypeName, opt_id) {
 };
 
 /**
- * Obtain a newly created block.
- * @param {!Blockly.Workspace} workspace The block's workspace.
- * @param {?string} prototypeName Name of the language object containing
- *     type-specific functions for this block.
- * @return {!Blockly.Block} The created block.
- * @deprecated December 2015
+ * 获取新创建的块
+ * @param {!Blockly.Workspace} workspace 块的工作区
+ * @param {?string} prototypeName 包含此块的特定类型函数的语言对象的名称
+ * @return {!Blockly.Block} 创建的块
+ * @deprecated 2015年12月被废弃使用
  */
 Blockly.Block.obtain = function(workspace, prototypeName) {
   console.warn('Deprecated call to Blockly.Block.obtain, ' +
@@ -204,31 +245,28 @@ Blockly.Block.obtain = function(workspace, prototypeName) {
 };
 
 /**
- * Optional text data that round-trips beween blocks and XML.
- * Has no effect. May be used by 3rd parties for meta information.
+ * 块与XML之间往返的可选文本数据。没有效果。可由第三方用于元信息
  * @type {?string}
  */
 Blockly.Block.prototype.data = null;
 
 /**
- * Colour of the block in '#RRGGBB' format.
+ * 块的颜色为'#RRGGBB'格式。
  * @type {string}
  * @private
  */
 Blockly.Block.prototype.colour_ = '#000000';
 
 /**
- * Colour of the block as HSV hue value (0-360)
+ * 块的颜色作为HSV色调值( 0 - 360 )
  * @type {?number}
  * @private
   */
 Blockly.Block.prototype.hue_ = null;
 
 /**
- * Dispose of this block.
- * @param {boolean} healStack If true, then try to heal any gap by connecting
- *     the next statement with the previous statement.  Otherwise, dispose of
- *     all children of this block.
+ * 把这个块处理掉
+ * @param {boolean} healStack 如果为 true，则尝试通过将下一个语句与上一个语句连接来修复任何缺口。否则，处置该块的所有子块。
  */
 Blockly.Block.prototype.dispose = function(healStack) {
   if (!this.workspace) {
@@ -284,12 +322,10 @@ Blockly.Block.prototype.dispose = function(healStack) {
 };
 
 /**
- * Call initModel on all fields on the block.
- * May be called more than once.
- * Either initModel or initSvg must be called after creating a block and before
- * the first interaction with it.  Interactions include UI actions
- * (e.g. clicking and dragging) and firing events (e.g. create, delete, and
- * change).
+ * 对块上的所有字段调用initModel
+ * 可以调用多次
+ * 在创建块之后和与块的第一次交互之前，必须调用 initModel 或 initSvg
+ * 交互包括 UI 操作(例如单击和拖动)和激发事件(例如创建、删除和更改)
  * @public
  */
 Blockly.Block.prototype.initModel = function() {
@@ -303,10 +339,8 @@ Blockly.Block.prototype.initModel = function() {
 };
 
 /**
- * Unplug this block from its superior block.  If this block is a statement,
- * optionally reconnect the block underneath with the block on top.
- * @param {boolean=} opt_healStack Disconnect child statement and reconnect
- *   stack.  Defaults to false.
+ * 从上级模块上拔下此模块。如果此块是语句，则可选地将下面的块与上面的块重新连接。
+ * @param {boolean=} opt_healStack 断开子语句并重新连接堆栈。默认值为 false
  */
 Blockly.Block.prototype.unplug = function(opt_healStack) {
   if (this.outputConnection) {
@@ -336,9 +370,9 @@ Blockly.Block.prototype.unplug = function(opt_healStack) {
 };
 
 /**
- * Returns all connections originating from this block.
- * @param {boolean} _all If true, return all connections even hidden ones.
- * @return {!Array.<!Blockly.Connection>} Array of connections.
+ * 返回源自此块的所有连接
+ * @param {boolean} _all 如果为true，则返回所有连接，甚至是隐藏的连接
+ * @return {!Array.<!Blockly.Connection>} 由 Connection 组成的数组
  * @private
  */
 Blockly.Block.prototype.getConnections_ = function(_all) {
@@ -361,8 +395,8 @@ Blockly.Block.prototype.getConnections_ = function(_all) {
 };
 
 /**
- * Walks down a stack of blocks and finds the last next connection on the stack.
- * @return {Blockly.Connection} The last next connection on the stack, or null.
+ * 遍历一堆块并找到堆栈上的最后一个下一个连接
+ * @return {Blockly.Connection} 堆栈上的最后一个连接，或 null
  * @package
  */
 Blockly.Block.prototype.lastConnectionInStack_ = function() {
@@ -380,8 +414,7 @@ Blockly.Block.prototype.lastConnectionInStack_ = function() {
 };
 
 /**
- * Bump unconnected blocks out of alignment.  Two blocks which aren't actually
- * connected should not coincidentally line up on screen.
+ * 将未连接的块撞出对齐。没有实际连接的两个块不应该在屏幕上同时对齐。
  * @private
  */
 Blockly.Block.prototype.bumpNeighbours_ = function() {
@@ -390,8 +423,8 @@ Blockly.Block.prototype.bumpNeighbours_ = function() {
 };
 
 /**
- * Return the parent block or null if this block is at the top level.
- * @return {Blockly.Block} The block that holds the current block.
+ * 返回父块，如果此块位于顶层，则返回null
+ * @return {Blockly.Block} 顶上连接当前块的块
  */
 Blockly.Block.prototype.getParent = function() {
   // Look at the DOM to see if we are nested in another block.
@@ -399,9 +432,9 @@ Blockly.Block.prototype.getParent = function() {
 };
 
 /**
- * Return the input that connects to the specified block.
- * @param {!Blockly.Block} block A block connected to an input on this block.
- * @return {Blockly.Input} The input that connects to the specified block.
+ * 返回连接到指定块的输入
+ * @param {!Blockly.Block} block 连接到此块上输入的块
+ * @return {Blockly.Input} 连接到指定块的输入
  */
 Blockly.Block.prototype.getInputWithBlock = function(block) {
   for (var i = 0, input; input = this.inputList[i]; i++) {
@@ -413,10 +446,9 @@ Blockly.Block.prototype.getInputWithBlock = function(block) {
 };
 
 /**
- * Return the parent block that surrounds the current block, or null if this
- * block has no surrounding block.  A parent block might just be the previous
- * statement, whereas the surrounding block is an if statement, while loop, etc.
- * @return {Blockly.Block} The block that surrounds the current block.
+ * 返回环绕当前块的父块，如果此块没有环绕块，则返回null。
+ * 父块可能只是前一个语句，而周围的块是 if 语句、while 循环等。
+ * @return {Blockly.Block} 围绕当前块的块
  */
 Blockly.Block.prototype.getSurroundParent = function() {
   var block = this;
@@ -433,16 +465,16 @@ Blockly.Block.prototype.getSurroundParent = function() {
 };
 
 /**
- * Return the next statement block directly connected to this block.
- * @return {Blockly.Block} The next statement block or null.
+ * 返回直接连接到此块的下一个语句块
+ * @return {Blockly.Block} 下一个语句块或空
  */
 Blockly.Block.prototype.getNextBlock = function() {
   return this.nextConnection && this.nextConnection.targetBlock();
 };
 
 /**
- * Return the top-most block in this block's tree.
- * This will return itself if this block is at the top level.
+ * 返回此块树中最上面的块
+ * 如果此块位于顶层，则返回它自己
  * @return {!Blockly.Block} The root block.
  */
 Blockly.Block.prototype.getRootBlock = function() {
@@ -456,17 +488,17 @@ Blockly.Block.prototype.getRootBlock = function() {
 };
 
 /**
- * Find all the blocks that are directly nested inside this one.
- * Includes value and block inputs, as well as any following statement.
- * Excludes any connection on an output tab or any preceding statement.
- * @return {!Array.<!Blockly.Block>} Array of blocks.
+ * 查找直接嵌套在此块中的所有块。
+ * 包括值和块输入以及任何跟随的语句。
+ * 排除输出选项卡上的任何连接或前面的任何语句。
+ * @return {!Array.<!Blockly.Block>} 由块组成的数组.
  */
 Blockly.Block.prototype.getChildren = function() {
   return this.childBlocks_;
 };
 
 /**
- * Set parent of this block to be a new block or null.
+ * 将此块的父块设置为新块或 null
  * @param {Blockly.Block} newParent New parent block.
  */
 Blockly.Block.prototype.setParent = function(newParent) {
@@ -502,11 +534,11 @@ Blockly.Block.prototype.setParent = function(newParent) {
 };
 
 /**
- * Find all the blocks that are directly or indirectly nested inside this one.
- * Includes this block in the list.
- * Includes value and block inputs, as well as any following statements.
- * Excludes any connection on an output tab or any preceding statements.
- * @return {!Array.<!Blockly.Block>} Flattened array of blocks.
+ * 查找直接或间接嵌套在此块中的所有块
+ * 将此块包括在列表中
+ * 包括值和块输入以及任何语句
+ * 排除输出选项卡上的任何连接或前面的任何语句
+ * @return {!Array.<!Blockly.Block>} 拍平的块数组
  */
 Blockly.Block.prototype.getDescendants = function() {
   var blocks = [this];
@@ -517,8 +549,8 @@ Blockly.Block.prototype.getDescendants = function() {
 };
 
 /**
- * Get whether this block is deletable or not.
- * @return {boolean} True if deletable.
+ * 获取此块是否可删除
+ * @return {boolean} 如果可删除，则为 true
  */
 Blockly.Block.prototype.isDeletable = function() {
   return this.deletable_ && !this.isShadow_ &&
@@ -526,16 +558,16 @@ Blockly.Block.prototype.isDeletable = function() {
 };
 
 /**
- * Set whether this block is deletable or not.
- * @param {boolean} deletable True if deletable.
+ * 设置此块是否可删除
+ * @param {boolean} deletable 如果可删除，则为 true
  */
 Blockly.Block.prototype.setDeletable = function(deletable) {
   this.deletable_ = deletable;
 };
 
 /**
- * Get whether this block is movable or not.
- * @return {boolean} True if movable.
+ * 获取此块是否可移动
+ * @return {boolean} 如果可移动，则为 true
  */
 Blockly.Block.prototype.isMovable = function() {
   return this.movable_ && !this.isShadow_ &&
@@ -543,40 +575,40 @@ Blockly.Block.prototype.isMovable = function() {
 };
 
 /**
- * Set whether this block is movable or not.
- * @param {boolean} movable True if movable.
+ * 设置此块是否可移动
+ * @param {boolean} movable 如果可移动，则为 true
  */
 Blockly.Block.prototype.setMovable = function(movable) {
   this.movable_ = movable;
 };
 
 /**
- * Get whether this block is a shadow block or not.
- * @return {boolean} True if a shadow.
+ * 获取此块是否为阴影块
+ * @return {boolean} true 若是影子块
  */
 Blockly.Block.prototype.isShadow = function() {
   return this.isShadow_;
 };
 
 /**
- * Set whether this block is a shadow block or not.
- * @param {boolean} shadow True if a shadow.
+ * 设置此块是否为阴影块
+ * @param {boolean} shadow 真若是阴影块。
  */
 Blockly.Block.prototype.setShadow = function(shadow) {
   this.isShadow_ = shadow;
 };
 
 /**
- * Get whether this block is editable or not.
- * @return {boolean} True if editable.
+ * 获取此块是否可编辑
+ * @return {boolean} 如果可编辑，则为 true
  */
 Blockly.Block.prototype.isEditable = function() {
   return this.editable_ && !(this.workspace && this.workspace.options.readOnly);
 };
 
 /**
- * Set whether this block is editable or not.
- * @param {boolean} editable True if editable.
+ * 设置此块是否可编辑
+ * @param {boolean} editable 如果可编辑，则为 true
  */
 Blockly.Block.prototype.setEditable = function(editable) {
   this.editable_ = editable;
@@ -588,9 +620,9 @@ Blockly.Block.prototype.setEditable = function(editable) {
 };
 
 /**
- * Set whether the connections are hidden (not tracked in a database) or not.
- * Recursively walk down all child blocks (except collapsed blocks).
- * @param {boolean} hidden True if connections are hidden.
+ * 设置连接是否隐藏(不在数据库中跟踪)
+ * 递归地遍历所有子块(折叠块除外)
+ * @param {boolean} hidden 如果连接隐藏，则为 true
  */
 Blockly.Block.prototype.setConnectionsHidden = function(hidden) {
   if (!hidden && this.isCollapsed()) {
@@ -622,43 +654,40 @@ Blockly.Block.prototype.setConnectionsHidden = function(hidden) {
 };
 
 /**
- * Set the URL of this block's help page.
- * @param {string|Function} url URL string for block help, or function that
- *     returns a URL.  Null for no help.
+ * 设置此块的帮助页的 URL
+ * @param {string|Function} url 块帮助的 URL 字符串，或返回 URL 的函数。无帮助为空。
  */
 Blockly.Block.prototype.setHelpUrl = function(url) {
   this.helpUrl = url;
 };
 
 /**
- * Change the tooltip text for a block.
- * @param {string|!Function} newTip Text for tooltip or a parent element to
- *     link to for its tooltip.  May be a function that returns a string.
+ * 更改块的工具提示文本
+ * @param {string|!Function} newTip 工具提示的文本或要链接到其工具提示的父元素。可以是返回字符串的函数
  */
 Blockly.Block.prototype.setTooltip = function(newTip) {
   this.tooltip = newTip;
 };
 
 /**
- * Get the colour of a block.
- * @return {string} #RRGGBB string.
+ * 得到块的颜色
+ * @return {string} #RRGGBB
  */
 Blockly.Block.prototype.getColour = function() {
   return this.colour_;
 };
 
 /**
- * Get the HSV hue value of a block. Null if hue not set.
- * @return {?number} Hue value (0-360)
+ * 获取块的HSV色调值。如果未设置色调，则为空
+ * @return {?number} 色调值(0-360)
  */
 Blockly.Block.prototype.getHue = function() {
   return this.hue_;
 };
 
 /**
- * Change the colour of a block.
- * @param {number|string} colour HSV hue value (0 to 360), #RRGGBB string,
- *     or a message reference string pointing to one of those two values.
+ * 更改块的颜色
+ * @param {number|string} colour HSV 色调值(0 到 360)，#RRGGBB 字符串，或指向这两个值之一的消息引用字符串。
  */
 Blockly.Block.prototype.setColour = function(colour) {
   var dereferenced = goog.isString(colour) ?
@@ -683,13 +712,10 @@ Blockly.Block.prototype.setColour = function(colour) {
 };
 
 /**
- * Sets a callback function to use whenever the block's parent workspace
- * changes, replacing any prior onchange handler. This is usually only called
- * from the constructor, the block type initializer function, or an extension
- * initializer function.
- * @param {function(Blockly.Events.Abstract)} onchangeFn The callback to call
- *     when the block's workspace changes.
- * @throws {Error} if onchangeFn is not falsey or a function.
+ * 设置回调函数，以便在块的父工作区发生更改时使用，从而替换以前的任何 onchange 处理程序
+ * 这通常只从构造函数、块类型初始值设定项函数或扩展初始值设定项函数调用
+ * @param {function(Blockly.Events.Abstract)} onchangeFn 区块工作区变更时呼叫的回呼
+ * @throws {Error} 如果 onchangeFn 不是假的或函数。
  */
 Blockly.Block.prototype.setOnChange = function(onchangeFn) {
   if (onchangeFn && !goog.isFunction(onchangeFn)) {
@@ -706,9 +732,9 @@ Blockly.Block.prototype.setOnChange = function(onchangeFn) {
 };
 
 /**
- * Returns the named field from a block.
- * @param {string} name The name of the field.
- * @return {Blockly.Field} Named field, or null if field does not exist.
+ * 从块返回命名字段
+ * @param {string} name 字段的名称
+ * @return {Blockly.Field} 命名字段；如果字段不存在，则为空。
  */
 Blockly.Block.prototype.getField = function(name) {
   for (var i = 0, input; input = this.inputList[i]; i++) {
@@ -722,8 +748,8 @@ Blockly.Block.prototype.getField = function(name) {
 };
 
 /**
- * Return all variables referenced by this block.
- * @return {!Array.<string>} List of variable names.
+ * 返回此块引用的所有变量
+ * @return {!Array.<string>} 变量名称组成的数组
  * @package
  */
 Blockly.Block.prototype.getVars = function() {
@@ -739,8 +765,8 @@ Blockly.Block.prototype.getVars = function() {
 };
 
 /**
- * Return all variables referenced by this block.
- * @return {!Array.<!Blockly.VariableModel>} List of variable models.
+ * 返回此块引用的所有变量
+ * @return {!Array.<!Blockly.VariableModel>} 由变量组成的数组
  * @package
  */
 Blockly.Block.prototype.getVarModels = function() {
@@ -761,9 +787,9 @@ Blockly.Block.prototype.getVarModels = function() {
 };
 
 /**
- * Notification that a variable is renaming but keeping the same ID.  If the
- * variable is in use on this block, rerender to show the new name.
- * @param {!Blockly.VariableModel} variable The variable being renamed.
+ * 通知变量正在重命名但保持相同的 ID
+ * 如果此块上正在使用变量，请重新录制以显示新名称
+ * @param {!Blockly.VariableModel} variable 要重命名的变量
  * @package
  */
 Blockly.Block.prototype.updateVarName = function(variable) {
@@ -778,11 +804,10 @@ Blockly.Block.prototype.updateVarName = function(variable) {
 };
 
 /**
- * Notification that a variable is renaming.
- * If the ID matches one of this block's variables, rename it.
- * @param {string} oldId ID of variable to rename.
- * @param {string} newId ID of new variable.  May be the same as oldId, but with
- *     an updated name.
+ * 通知变量正在重命名
+ * 如果ID与此块的变量之一匹配，重命名它
+ * @param {string} oldId 要重命名的变量的 ID
+ * @param {string} newId 新变量的标识。可能与 oldId 相同，但具有更新的名称
  */
 Blockly.Block.prototype.renameVarById = function(oldId, newId) {
   for (var i = 0, input; input = this.inputList[i]; i++) {
@@ -796,9 +821,9 @@ Blockly.Block.prototype.renameVarById = function(oldId, newId) {
 };
 
 /**
- * Returns the language-neutral value from the field of a block.
- * @param {string} name The name of the field.
- * @return {?string} Value from the field or null if field does not exist.
+ * 从块的字段返回字段值
+ * @param {string} name 字段的名称
+ * @return {?string} 字段中的值；如果字段不存在，则为空
  */
 Blockly.Block.prototype.getFieldValue = function(name) {
   var field = this.getField(name);
@@ -809,9 +834,9 @@ Blockly.Block.prototype.getFieldValue = function(name) {
 };
 
 /**
- * Change the field value for a block (e.g. 'CHOOSE' or 'REMOVE').
- * @param {string} newValue Value to be the new field.
- * @param {string} name The name of the field.
+ * 更改块的字段值(例如“选择”或“删除”)。
+ * @param {string} newValue 值作为新字段
+ * @param {string} name 字段的名称
  */
 Blockly.Block.prototype.setFieldValue = function(newValue, name) {
   var field = this.getField(name);
@@ -820,10 +845,9 @@ Blockly.Block.prototype.setFieldValue = function(newValue, name) {
 };
 
 /**
- * Set whether this block can chain onto the bottom of another block.
- * @param {boolean} newBoolean True if there can be a previous statement.
- * @param {(string|Array.<string>|null)=} opt_check Statement type or
- *     list of statement types.  Null/undefined if any type could be connected.
+ * 设置此块是否可以链接到另一个块的底部
+ * @param {boolean} newBoolean 如果可以有上一个语句，则为 true
+ * @param {(string|Array.<string>|null)=} opt_check 语句类型或语句类型列表。如果可以连接任何类型，则为空/未定义
  */
 Blockly.Block.prototype.setPreviousStatement = function(newBoolean, opt_check) {
   if (newBoolean) {
@@ -848,10 +872,9 @@ Blockly.Block.prototype.setPreviousStatement = function(newBoolean, opt_check) {
 };
 
 /**
- * Set whether another block can chain onto the bottom of this block.
- * @param {boolean} newBoolean True if there can be a next statement.
- * @param {(string|Array.<string>|null)=} opt_check Statement type or
- *     list of statement types.  Null/undefined if any type could be connected.
+ * 设置其他块是否可以链接到此块的底部
+ * @param {boolean} newBoolean 如果可以有下一个语句，则为 true
+ * @param {(string|Array.<string>|null)=} opt_check 语句类型或语句类型列表。如果可以连接任何类型，则为空/未定义。
  */
 Blockly.Block.prototype.setNextStatement = function(newBoolean, opt_check) {
   if (newBoolean) {
@@ -873,11 +896,9 @@ Blockly.Block.prototype.setNextStatement = function(newBoolean, opt_check) {
 };
 
 /**
- * Set whether this block returns a value.
- * @param {boolean} newBoolean True if there is an output.
- * @param {(string|Array.<string>|null)=} opt_check Returned type or list
- *     of returned types.  Null or undefined if any type could be returned
- *     (e.g. variable get).
+ * 设置此块是否返回值
+ * @param {boolean} newBoolean 如果有输出，则为 true
+ * @param {(string|Array.<string>|null)=} opt_check 返回类型或返回类型列表。如果可以返回任何类型(例如变量 get )，则为空或未定义
  */
 Blockly.Block.prototype.setOutput = function(newBoolean, opt_check) {
   if (newBoolean) {
@@ -901,8 +922,8 @@ Blockly.Block.prototype.setOutput = function(newBoolean, opt_check) {
 };
 
 /**
- * Set whether value inputs are arranged horizontally or vertically.
- * @param {boolean} newBoolean True if inputs are horizontal.
+ * 设置值输入是水平排列还是垂直排列
+ * @param {boolean} newBoolean 如果输入是水平的，则为 true
  */
 Blockly.Block.prototype.setInputsInline = function(newBoolean) {
   if (this.inputsInline != newBoolean) {
@@ -913,8 +934,8 @@ Blockly.Block.prototype.setInputsInline = function(newBoolean) {
 };
 
 /**
- * Get whether value inputs are arranged horizontally or vertically.
- * @return {boolean} True if inputs are horizontal.
+ * 获取值输入是水平排列还是垂直排列
+ * @return {boolean} 如果输入是水平的，则为 true
  */
 Blockly.Block.prototype.getInputsInline = function() {
   if (this.inputsInline != undefined) {
@@ -952,9 +973,9 @@ Blockly.Block.prototype.setDisabled = function(disabled) {
 };
 
 /**
- * Get whether the block is disabled or not due to parents.
- * The block's own disabled property is not considered.
- * @return {boolean} True if disabled.
+ * 获取块是否由于父级而禁用
+ * 不考虑块本身的禁用属性
+ * @return {boolean} 如果禁用，则为true
  */
 Blockly.Block.prototype.getInheritedDisabled = function() {
   var ancestor = this.getSurroundParent();
@@ -969,16 +990,16 @@ Blockly.Block.prototype.getInheritedDisabled = function() {
 };
 
 /**
- * Get whether the block is collapsed or not.
- * @return {boolean} True if collapsed.
+ * 获取块是否折叠
+ * @return {boolean} 如果折叠，则为 true
  */
 Blockly.Block.prototype.isCollapsed = function() {
   return this.collapsed_;
 };
 
 /**
- * Set whether the block is collapsed or not.
- * @param {boolean} collapsed True if collapsed.
+ * 设置块是否折叠
+ * @param {boolean} collapsed 如果折叠，则为 true
  */
 Blockly.Block.prototype.setCollapsed = function(collapsed) {
   if (this.collapsed_ != collapsed) {
@@ -989,11 +1010,10 @@ Blockly.Block.prototype.setCollapsed = function(collapsed) {
 };
 
 /**
- * Create a human-readable text representation of this block and any children.
- * @param {number=} opt_maxLength Truncate the string to this length.
- * @param {string=} opt_emptyToken The placeholder string used to denote an
- *     empty field. If not specified, '?' is used.
- * @return {string} Text of block.
+ * 创建此块和任何子块的人类可读文本表示
+ * @param {number=} opt_maxLength 将字符串截断到此长度
+ * @param {string=} opt_emptyToken 占位符字符串，用于表示空字段。如果未指定 ？使用
+ * @return {string} 块的文本
  */
 Blockly.Block.prototype.toString = function(opt_maxLength, opt_emptyToken) {
   var text = [];
@@ -1030,39 +1050,35 @@ Blockly.Block.prototype.toString = function(opt_maxLength, opt_emptyToken) {
 };
 
 /**
- * Shortcut for appending a value input row.
- * @param {string} name Language-neutral identifier which may used to find this
- *     input again.  Should be unique to this block.
- * @return {!Blockly.Input} The input object created.
+ * 添加值输入行的快捷方式
+ * @param {string} name 标识符，可用于再次查找此输入。应该对此块唯一
+ * @return {!Blockly.Input} 创建的输入对象
  */
 Blockly.Block.prototype.appendValueInput = function(name) {
   return this.appendInput_(Blockly.INPUT_VALUE, name);
 };
 
 /**
- * Shortcut for appending a statement input row.
- * @param {string} name Language-neutral identifier which may used to find this
- *     input again.  Should be unique to this block.
- * @return {!Blockly.Input} The input object created.
+ * 添加语句输入行的快捷方式
+ * @param {string} name 标识符，可用于再次查找此输入。应该对此块唯一
+ * @return {!Blockly.Input} 创建的输入对象
  */
 Blockly.Block.prototype.appendStatementInput = function(name) {
   return this.appendInput_(Blockly.NEXT_STATEMENT, name);
 };
 
 /**
- * Shortcut for appending a dummy input row.
- * @param {string=} opt_name Language-neutral identifier which may used to find
- *     this input again.  Should be unique to this block.
- * @return {!Blockly.Input} The input object created.
+ * 添加虚拟输入行的快捷方式
+ * @param {string=} opt_name 标识符，可用于再次查找此输入。应该对此块唯一
+ * @return {!Blockly.Input} 创建的输入对象
  */
 Blockly.Block.prototype.appendDummyInput = function(opt_name) {
   return this.appendInput_(Blockly.DUMMY_INPUT, opt_name || '');
 };
 
 /**
- * Initialize this block using a cross-platform, internationalization-friendly
- * JSON description.
- * @param {!Object} json Structured data describing the block.
+ * 使用跨平台、国际化友好的JSON描述初始化此块
+ * @param {!Object} json 描述块的结构化数据
  */
 Blockly.Block.prototype.jsonInit = function(json) {
   var warningPrefix = json['type'] ? 'Block "' + json['type'] + '": ' : '';
@@ -1133,9 +1149,9 @@ Blockly.Block.prototype.jsonInit = function(json) {
 };
 
 /**
- * Initialize the colour of this block from the JSON description.
- * @param {!Object} json Structured data describing the block.
- * @param {string} warningPrefix Warning prefix string identifying block.
+ * 从JSON描述初始化此块的颜色
+ * @param {!Object} json 描述块的结构化数据
+ * @param {string} warningPrefix 警告前缀字符串标识块
  * @private
  */
 Blockly.Block.prototype.jsonInitColour_ = function(json, warningPrefix) {
@@ -1154,11 +1170,9 @@ Blockly.Block.prototype.jsonInitColour_ = function(json, warningPrefix) {
 };
 
 /**
- * Add key/values from mixinObj to this block object. By default, this method
- * will check that the keys in mixinObj will not overwrite existing values in
- * the block, including prototype values. This provides some insurance against
- * mixin / extension incompatibilities with future block features. This check
- * can be disabled by passing true as the second argument.
+ * 将 mixinObj 中的键/值添加到此块对象。默认情况下，此方法将检查 mixinObj 中的键不会覆盖块中的现有值，包括原型值。
+ * 这为防止与未来块功能的混合/扩展不兼容提供了一些保障。
+ * 通过将 true 作为第二个参数传递，可以禁用此检查。
  * @param {!Object} mixinObj The key/values pairs to add to this block object.
  * @param {boolean=} opt_disableCheck Option flag to disable overwrite checks.
  */
@@ -1182,12 +1196,10 @@ Blockly.Block.prototype.mixin = function(mixinObj, opt_disableCheck) {
 };
 
 /**
- * Interpolate a message description onto the block.
- * @param {string} message Text contains interpolation tokens (%1, %2, ...)
- *     that match with fields or inputs defined in the args array.
- * @param {!Array} args Array of arguments to be interpolated.
- * @param {string=} lastDummyAlign If a dummy input is added at the end,
- *     how should it be aligned?
+ * 将消息描述插入到块中
+ * @param {string} message 文本包含内插标记(...)与 args 数组中定义的字段或输入匹配。
+ * @param {!Array} args 要插入的参数数组
+ * @param {string=} lastDummyAlign 如果在末尾添加虚拟输入，应如何对齐它
  * @private
  */
 Blockly.Block.prototype.interpolate_ = function(message, args, lastDummyAlign) {
@@ -1299,12 +1311,10 @@ Blockly.Block.prototype.interpolate_ = function(message, args, lastDummyAlign) {
 };
 
 /**
- * Add a value input, statement input or local variable to this block.
- * @param {number} type Either Blockly.INPUT_VALUE or Blockly.NEXT_STATEMENT or
- *     Blockly.DUMMY_INPUT.
- * @param {string} name Language-neutral identifier which may used to find this
- *     input again.  Should be unique to this block.
- * @return {!Blockly.Input} The input object created.
+ * 将值输入、语句输入或局部变量添加到此块
+ * @param {number} type Blockly.INPUT_VALUE 或者 Blockly.NEXT_STATEMENT 或者 Blockly.DUMMY_INPUT
+ * @param {string} name 标识符，可用于再次查找此输入。应该对此块唯一
+ * @return {!Blockly.Input} 创建的输入对象
  * @private
  */
 Blockly.Block.prototype.appendInput_ = function(type, name) {
@@ -1319,10 +1329,9 @@ Blockly.Block.prototype.appendInput_ = function(type, name) {
 };
 
 /**
- * Move a named input to a different location on this block.
- * @param {string} name The name of the input to move.
- * @param {?string} refName Name of input that should be after the moved input,
- *   or null to be the input at the end.
+ * 将命名输入移动到此块上的其他位置
+ * @param {string} name 要移动的输入的名称
+ * @param {?string} refName 应在移动输入之后的输入名称，或 null 作为末尾的输入
  */
 Blockly.Block.prototype.moveInputBefore = function(name, refName) {
   if (name == refName) {
@@ -1351,9 +1360,9 @@ Blockly.Block.prototype.moveInputBefore = function(name, refName) {
 };
 
 /**
- * Move a numbered input to a different location on this block.
- * @param {number} inputIndex Index of the input to move.
- * @param {number} refIndex Index of input that should be after the moved input.
+ * 将编号输入移动到此块上的其他位置。
+ * @param {number} inputIndex 要移动的输入的索引
+ * @param {number} refIndex 应在移动输入之后的输入索引
  */
 Blockly.Block.prototype.moveNumberedInputBefore = function(
     inputIndex, refIndex) {
@@ -1374,11 +1383,10 @@ Blockly.Block.prototype.moveNumberedInputBefore = function(
 };
 
 /**
- * Remove an input from this block.
- * @param {string} name The name of the input.
- * @param {boolean=} opt_quiet True to prevent error if input is not present.
- * @throws {goog.asserts.AssertionError} if the input is not present and
- *     opt_quiet is not true.
+ * 删除此块中的输入
+ * @param {string} name 输入的名称
+ * @param {boolean=} opt_quiet 如果不存在输入，则为 true 以防止出错
+ * @throws {goog.asserts.AssertionError} 如果输入不存在且 opt_quiet 不为真。
  */
 Blockly.Block.prototype.removeInput = function(name, opt_quiet) {
   for (var i = 0, input; input = this.inputList[i]; i++) {
@@ -1405,9 +1413,9 @@ Blockly.Block.prototype.removeInput = function(name, opt_quiet) {
 };
 
 /**
- * Fetches the named input object.
- * @param {string} name The name of the input.
- * @return {Blockly.Input} The input object, or null if input does not exist.
+ * 获取命名的输入对象
+ * @param {string} name 输入的名称
+ * @return {Blockly.Input} 输入对象；如果输入不存在，则为空
  */
 Blockly.Block.prototype.getInput = function(name) {
   for (var i = 0, input; input = this.inputList[i]; i++) {
@@ -1420,10 +1428,9 @@ Blockly.Block.prototype.getInput = function(name) {
 };
 
 /**
- * Fetches the block attached to the named input.
- * @param {string} name The name of the input.
- * @return {Blockly.Block} The attached value block, or null if the input is
- *     either disconnected or if the input does not exist.
+ * 获取添加到命名输入的块。
+ * @param {string} name 输入的名称
+ * @return {Blockly.Block} 添加的块，如果输入断开连接或输入不存在，则为 null。
  */
 Blockly.Block.prototype.getInputTargetBlock = function(name) {
   var input = this.getInput(name);
@@ -1431,16 +1438,16 @@ Blockly.Block.prototype.getInputTargetBlock = function(name) {
 };
 
 /**
- * Returns the comment on this block (or '' if none).
- * @return {string} Block's comment.
+ * 传回此区块的注解(如果没有，则传回 ''
+ * @return {string} 块的注释
  */
 Blockly.Block.prototype.getCommentText = function() {
   return this.comment || '';
 };
 
 /**
- * Set this block's comment text.
- * @param {?string} text The text, or null to delete.
+ * 设置此块的注释文本
+ * @param {?string} text 要删除的文本或空值
  */
 Blockly.Block.prototype.setCommentText = function(text) {
   if (this.comment != text) {
@@ -1451,37 +1458,34 @@ Blockly.Block.prototype.setCommentText = function(text) {
 };
 
 /**
- * Set this block's warning text.
- * @param {?string} _text The text, or null to delete.
- * @param {string=} _opt_id An optional ID for the warning text to be able to
- *     maintain multiple warnings.
+ * 设置此块的警告文本
+ * @param {?string} _text 要删除的文本或空值
+ * @param {string=} _opt_id 警告文本的可选 ID，以便能够维护多个警告。
  */
 Blockly.Block.prototype.setWarningText = function(_text, _opt_id) {
   // NOP.
 };
 
 /**
- * Give this block a mutator dialog.
- * @param {Blockly.Mutator} _mutator A mutator dialog instance or null to
- *     remove.
+ * 给这个块一个变异器对话框
+ * @param {Blockly.Mutator} _mutator 要移除的变异子对话方块执行个体或 null
  */
 Blockly.Block.prototype.setMutator = function(_mutator) {
   // NOP.
 };
 
 /**
- * Return the coordinates of the top-left corner of this block relative to the
- * drawing surface's origin (0,0), in workspace units.
- * @return {!goog.math.Coordinate} Object with .x and .y properties.
+ * 传回此图块左上角相对於图面原点( 0，0 )的座标(以工作区为单位)
+ * @return {!goog.math.Coordinate} 一个有 .x 和 .y 属性的对象
  */
 Blockly.Block.prototype.getRelativeToSurfaceXY = function() {
   return this.xy_;
 };
 
 /**
- * Move a block by a relative offset.
- * @param {number} dx Horizontal offset, in workspace units.
- * @param {number} dy Vertical offset, in workspace units.
+ * 按相对偏移移动块
+ * @param {number} dx 水平偏移，以工作区单位表示
+ * @param {number} dy 垂直偏移，以工作区单位表示
  */
 Blockly.Block.prototype.moveBy = function(dx, dy) {
   goog.asserts.assert(!this.parentBlock_, 'Block has parent.');
@@ -1492,9 +1496,9 @@ Blockly.Block.prototype.moveBy = function(dx, dy) {
 };
 
 /**
- * Create a connection of the specified type.
- * @param {number} type The type of the connection to create.
- * @return {!Blockly.Connection} A new connection of the specified type.
+ * 创建指定类型的连接
+ * @param {number} type 要创建的连接的类型
+ * @return {!Blockly.Connection} 指定类型的新连接
  * @private
  */
 Blockly.Block.prototype.makeConnection_ = function(type) {
@@ -1502,11 +1506,9 @@ Blockly.Block.prototype.makeConnection_ = function(type) {
 };
 
 /**
- * Recursively checks whether all statement and value inputs are filled with
- * blocks. Also checks all following statement blocks in this stack.
- * @param {boolean=} opt_shadowBlocksAreFilled An optional argument controlling
- *     whether shadow blocks are counted as filled. Defaults to true.
- * @return {boolean} True if all inputs are filled, false otherwise.
+ * 递归检查所有语句和值输入是否都填充了块。还检查此堆栈中的所有语句块。
+ * @param {boolean=} opt_shadowBlocksAreFilled 控制阴影块是否计算为已填充的可选参数。默认值为true。
+ * @return {boolean} 如果所有输入都已填充，则为true，否则为false。
  */
 Blockly.Block.prototype.allInputsFilled = function(opt_shadowBlocksAreFilled) {
   // Account for the shadow block filledness toggle.
@@ -1538,12 +1540,10 @@ Blockly.Block.prototype.allInputsFilled = function(opt_shadowBlocksAreFilled) {
 };
 
 /**
- * This method returns a string describing this Block in developer terms (type
- * name and ID; English only).
+ * 此方法返回以开发人员术语(类型名称和ID；只有英文)。
  *
- * Intended to on be used in console logs and errors. If you need a string that
- * uses the user's native language (including block text, field values, and
- * child blocks), use [toString()]{@link Blockly.Block#toString}.
+ * 打算在控制台日志和错误中使用。
+ * 如果需要使用用户本机语言(包括块文本、字段值和子块)的字符串，请使用[toString()]。
  * @return {string} The description.
  */
 Blockly.Block.prototype.toDevString = function() {

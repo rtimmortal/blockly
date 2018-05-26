@@ -19,9 +19,7 @@
  */
 
 /**
- * @fileoverview Abstract class for events fired as a result of actions in
- *     Blockly's editor.
- * @author fraser@google.com (Neil Fraser)
+ * @fileoverview Blockly编辑器中操作引发的事件的抽象类。
  */
 'use strict';
 
@@ -32,34 +30,32 @@ goog.require('goog.array');
 goog.require('goog.math.Coordinate');
 
 /**
- * Abstract class for an event.
+ * 事件的抽象类。
  * @constructor
  */
 Blockly.Events.Abstract = function() {
   /**
-   * The workspace identifier for this event.
+   * 此事件的工作区标识符。
    * @type {string|undefined}
    */
   this.workspaceId = undefined;
 
   /**
-   * The event group id for the group this event belongs to. Groups define
-   * events that should be treated as an single action from the user's
-   * perspective, and should be undone together.
+   * 此事件所属组的事件组id。组定义事件，从用户的角度来看，这些事件应作为单个操作处理，并且应一起撤消。
    * @type {string}
    */
   this.group = Blockly.Events.group_;
 
   /**
-   * Sets whether the event should be added to the undo stack.
+   * 设置是否应将事件添加到撤消堆栈。
    * @type {boolean}
    */
   this.recordUndo = Blockly.Events.recordUndo;
 };
 
 /**
- * Encode the event as JSON.
- * @return {!Object} JSON representation.
+ * 将事件编码为JSON。
+ * @return {!Object} JSON 表示.
  */
 Blockly.Events.Abstract.prototype.toJson = function() {
   var json = {
@@ -72,33 +68,33 @@ Blockly.Events.Abstract.prototype.toJson = function() {
 };
 
 /**
- * Decode the JSON event.
- * @param {!Object} json JSON representation.
+ * 对JSON事件进行解码。
+ * @param {!Object} json JSON 表示.
  */
 Blockly.Events.Abstract.prototype.fromJson = function(json) {
   this.group = json['group'];
 };
 
 /**
- * Does this event record any change of state?
- * @return {boolean} True if null, false if something changed.
+ * 此事件是否记录任何状态更改？
+ * @return {boolean} 如果为空，则为true；如果有更改，则为false。
  */
 Blockly.Events.Abstract.prototype.isNull = function() {
   return false;
 };
 
 /**
- * Run an event.
- * @param {boolean} _forward True if run forward, false if run backward (undo).
+ * 运行事件。
+ * @param {boolean} _forward 向前运行时为true，向后运行时为false (撤消)。
  */
 Blockly.Events.Abstract.prototype.run = function(_forward) {
   // Defined by subclasses.
 };
 
 /**
- * Get workspace the event belongs to.
- * @return {Blockly.Workspace} The workspace the event belongs to.
- * @throws {Error} if workspace is null.
+ * 获取事件所属的工作区。
+ * @return {Blockly.Workspace} 事件所属的工作区。
+ * @throws {Error} 如果工作区为空。
  * @protected
  */
 Blockly.Events.Abstract.prototype.getEventWorkspace_ = function() {

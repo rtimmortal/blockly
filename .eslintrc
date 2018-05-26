@@ -29,7 +29,7 @@
         "max-len": [
             "error",
             {
-                "code": 100,
+                "code": 150,
                 "tabWidth": 4,
                 "ignoreStrings": true,
                 "ignoreRegExpLiterals": true
