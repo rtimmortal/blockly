@@ -42,8 +42,8 @@ goog.require('goog.math.Coordinate');
 
 
 /**
- * Abstract class for a block event.
- * @param {Blockly.Block} block The block this event corresponds to.
+ * 块事件的抽象类
+ * @param {Blockly.Block} block 此事件对应的块
  * @extends {Blockly.Events.Abstract}
  * @constructor
  */
@@ -60,8 +60,8 @@ Blockly.Events.BlockBase = function(block) {
 goog.inherits(Blockly.Events.BlockBase, Blockly.Events.Abstract);
 
 /**
- * Encode the event as JSON.
- * @return {!Object} JSON representation.
+ * 将事件编码为JSON
+ * @return {!Object} JSON 形式
  */
 Blockly.Events.BlockBase.prototype.toJson = function() {
   var json = Blockly.Events.BlockBase.superClass_.toJson.call(this);
@@ -70,8 +70,8 @@ Blockly.Events.BlockBase.prototype.toJson = function() {
 };
 
 /**
- * Decode the JSON event.
- * @param {!Object} json JSON representation.
+ * 对JSON事件进行解码
+ * @param {!Object} json JSON 形式
  */
 Blockly.Events.BlockBase.prototype.fromJson = function(json) {
   Blockly.Events.BlockBase.superClass_.toJson.call(this);
@@ -79,7 +79,7 @@ Blockly.Events.BlockBase.prototype.fromJson = function(json) {
 };
 
 /**
- * Class for a block change event.
+ * 类的新实例
  * @param {Blockly.Block} block The changed block.  Null for a blank event.
  * @param {string} element One of 'field', 'comment', 'disabled', etc.
  * @param {?string} name Name of input or field affected, or null.
