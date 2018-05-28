@@ -38,10 +38,10 @@ goog.require('goog.dom');
 
 
 /**
- * Encode a block tree as XML.
- * @param {!Blockly.Workspace} workspace The workspace containing blocks.
- * @param {boolean=} opt_noId True if the encoder should skip the block IDs.
- * @return {!Element} XML document.
+ * 把 workspace 转成 一个 xml 树，由所有的 topBlocks 组成，包含积木的所有信息
+ * @param {!Blockly.Workspace} workspace 包含块的工作区
+ * @param {boolean=} opt_noId 设置成 ture 编码器跳过块的 id
+ * @return {!Element} XML文档
  */
 Blockly.Xml.workspaceToDom = function(workspace, opt_noId) {
   var xml = goog.dom.createDom('xml');
